@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>At the Limits of Audience Engagement: When Does Interest in Netflix Series Begin to Decline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Prata&family=Advent+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0"></script>
+  
+  <style>
+    :root {
+      --bg: #182636;
+      --bg-soft: #223348;
+      --text: #ffffff;
+      --muted: rgba(255,255,255,.72);
+      --dim: rgba(255,255,255,.48);
+      --accent: #E5171D;
+      --accent-soft: rgba(229, 23, 29, .16);
+      --glass: rgba(255,255,255,.08);
+      --glass-strong: rgba(255,255,255,.12);
+      --border: rgba(255,255,255,.16);
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max: 1600px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Advent Pro", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(229,23,29,.14), transparent 28%),
+        radial-gradient(circle at 100% 10%, rgba(255,255,255,.05), transparent 30%),
+        linear-gradient(180deg, #122030 0%, #182636 40%, #182636 100%);
+      line-height: 1.65;
+    }
+
+    img { max-width: 100%; display: block; }
+    a {
+      color: var(--text);
+      text-decoration-color: rgba(229,23,29,.8);
+      text-underline-offset: 3px;
+    }
+
+    .container {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(24,38,54,.72);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-inner {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      font-size: 12px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .nav-meta {
+      color: var(--dim);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .hero {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: end;
+      overflow: hidden;
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(7,12,20,.18) 0%, rgba(24,38,54,.38) 45%, rgba(24,38,54,.96) 100%),
+        url('images/hero.jpg') center/cover no-repeat;
+      transform: scale(1.02);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      width: 85%;
+      margin: 0 auto;
+      padding: 120px 0 80px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: end;
+    }
+
+    .hero-card {
+      padding: 40px;
+      border-radius: var(--radius-xl);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(229,23,29,.28);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.08;
+    }
+
+    h1 {
+      font-family: "Advent Pro", sans-serif;
+      font-size: clamp(48px, 8vw, 96px);
+      margin-bottom: 20px;
+    }
+
+    .subtitle {
+      font-size: clamp(24px, 3vw, 32px);
+      color: rgba(255,255,255,.9);
+      margin-bottom: 20px;
+    }
+
+    .authors,
+    .date {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .info-chip {
+      padding: 18px 20px;
+      border-radius: var(--radius-lg);
+    }
+
+    .source-link {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 3;
+      font-size: 13px;
+      color: rgba(255,255,255,.88);
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.28);
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(14px);
+    }
+
+    .section {
+      padding: 28px 16px;
+    }
+
+    .section-top {
+      padding-top: 54px;
+    }
+
+    .divider {
+      margin: 36px auto;
+      width: min(calc(100% - 32px), var(--max));
+      padding: 22px 24px;
+      border-radius: 28px;
+      border: 1px solid rgba(229,23,29,.36);
+      background:
+        linear-gradient(90deg, rgba(229,23,29,.22), rgba(255,255,255,.05)),
+        rgba(255,255,255,.05);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset, 0 18px 50px rgba(0,0,0,.24);
+      backdrop-filter: blur(18px);
+    }
+
+    .divider strong {
+      color: #fff;
+      font-size: 14px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .divider p {
+      margin: 0;
+      color: #fff;
+      font-size: 32px;
+    }
+
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 16px;
+      padding: 0 16px;
+    }
+
+    .wide-cards .card {
+      padding: 40px;
+    }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .kicker {
+      display: inline-block;
+      margin-bottom: 14px;
+      color: var(--accent);
+      font-size: 32px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    h2 {
+      font-family: "Advent Pro", sans-serif;
+      font-size: clamp(28px, 4vw, 48px);
+      margin-bottom: 18px;
+    }
+
+    h3 {
+      font-family: "Advent Pro", sans-serif;
+      font-size: clamp(22px, 3vw, 34px);
+      margin-bottom: 14px;
+    }
+
+    p { margin: 0 0 16px; font-size: 32px;}
+    p:last-child { margin-bottom: 0; }
+
+    .muted { color: var(--muted); }
+
+    .full-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .full-layout {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap: 26px;
+      align-items: stretch;
+      padding: 0 16px;
+    }
+
+    .visual-stack {
+      display: grid;
+      gap: 18px;
+      min-height: 680px;
+    }
+
+    .placeholder {
+      position: relative;
+      border-radius: 28px;
+      overflow: visible;
+      min-height: 220px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.04)),
+        rgba(255,255,255,.04);
+      border: 1px dashed rgba(255,255,255,.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .placeholder.large { min-height: 340px; }
+    .placeholder.tall { min-height: 460px; padding: 24px; }
+
+    .placeholder::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at top left, rgba(229,23,29,.18), transparent 28%);
+    pointer-events: none;
+    }
+
+    .placeholder-label {
+      position: relative;
+      z-index: 1;
+      font-size: 14px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: rgba(255,255,255,.92);
+    }
+
+    .placeholder-sub {
+      display: block;
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: normal;
+      text-transform: none;
+      font-weight: 500;
+    }
+
+    .bullet-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .bullet-list li {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 25px;
+    }
+
+    .quote-block {
+      padding: 24px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(229,23,29,.14), rgba(255,255,255,.04));
+      border: 1px solid rgba(229,23,29,.25);
+      font-size: 18px;
+      color: rgba(255,255,255,.94);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: clamp(24px, 3vw, 34px);
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .two-visuals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .footer {
+      padding: 36px 16px 64px;
+    }
+
+    .footer-card {
+      padding: 26px;
+      border-radius: 28px;
+    }
+
+    .anchor-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .anchor-nav a {
+      display: inline-flex;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .chart-accent {
+    color: var(--accent);
+    }
+    .chart-wrapper {
+      position: relative;
+      height: 400px;
+    }
+
+    .chart-y-label {
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .chart-x-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 5px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .placeholder.tall canvas {
+        height: calc(100% - 7px) !important;
+    }
+
+    .chart-header {
+        margin-bottom: 0px;
+        box-sizing: border-box;
+    }
+
+    .chart-title {
+        font-size: 36px;
+        margin: 0;
+        color: var(--text);
+        font-family: "Advent Pro", sans-serif;
+        font-weight: 600;
+        text-align: left;
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
+
+        line-height: 1.1;
+    }
+    .zoomable {
+    cursor: zoom-in;
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+#lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s;
+    z-index: 9999;
+}
+
+#lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    cursor: zoom-out;
+}
+    .chart-subtitle {
+        font-size: 20px;
+        margin: 0;
+        color: var(--muted);
+        text-align: left;
+    }
+
+    .chart-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--muted);
+    width: 100%;
+    }
+    .votes-card {
+  padding: 32px;
+}
+
+  .votes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .vote-item {
+    padding: 20px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+
+  .vote-label {
+    font-size: 14px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .vote-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .vote-desc {
+    font-size: 18px;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.4;
+  }
+
+    .chart-source {
+    text-align: left;
+    flex: 1;
+    }
+
+    .chart-authors {
+    text-align: right;
+    flex: 1;
+    margin-left: auto;
+    }
+
+    .season-block {
+      margin-top: 28px;
+    }
+    .seasons-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      justify-content: center;  
+      gap: 12px;
+      width: 100%;
+    }
+    .seasons-umb-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr); 
+      justify-content: center;  
+      gap: 12px;
+      width: 100%;
+    }
+
+    .seasons-grid .vote-item {
+      aspect-ratio: auto;
+      flex-direction: column;
+      align-items: left;
+      text-align: left;
+      padding: 12px;
+      width: 200px;
+      width: 100%; 
+      max-width: 100%;
+    }
+
+    .seasons-grid .vote-label {
+      font-size: 14px;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+
+    .seasons-grid .vote-value {
+      font-size: 36px;
+    }
+
+    .rate-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      justify-content: center;  
+      gap: 12px;
+      width: 100%;
+    }
+    .rate-grid .vote-item {
+      aspect-ratio: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: left;
+      text-align: left;
+      padding: 12px;
+      width: 200px;
+      width: 100%;   
+      max-width: 100%;
+    }
+
+    .rate-grid .vote-label {
+      font-size: 14px;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+
+    .rate-grid .vote-value {
+      font-size: 36px;
+    }
+    .season-title {
+      font-size: 24px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .season-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .season-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 18px;
+    }
+
+    .season-item strong {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .season-highlight {
+      background: rgba(229,23,29,.12);
+      border: 1px solid rgba(229,23,29,.3);
+    }
+
+    .season-highlight strong {
+      color: var(--accent);
+    }
+
+    .image-caption-block {
+      padding: 18px 20px;
+      border-radius: 20px;
+      margin-top: 8px;
+    }
+
+    .image-caption-block p {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .image-caption-block p:last-child {
+      margin-bottom: 0;
+      font-size: 18px;
+    }
+    .quote-profile-block {
+  padding: 28px;
+  border-radius: 28px;
+}
+
+.quote-text {
+  font-size: 34px;
+  line-height: 1.3;
+  color: rgba(255,255,255,0.96);
+  margin-bottom: 28px;
+  max-width: 1200px;
+  position: relative;
+  padding-left: 18px;
+}
+
+.quote-text::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.28);
+}
+
+.quote-profile-content {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.quote-profile-photo {
+  width: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.quote-profile-photo img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 1 / 1.2;
+  object-fit: cover;
+}
+
+.quote-profile-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.quote-meta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quote-meta-label {
+  display: inline-block;
+  width: fit-content;
+  font-size: 24px;
+  font-style: italic;
+  text-decoration: underline;
+  color: rgba(255,255,255,0.92);
+}
+
+.quote-meta-text {
+  font-size: 30px;
+  line-height: 1.35;
+  color: rgba(255,255,255,0.94);
+  max-width: 900px;
+}
+
+.quote-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quote-links a {
+  width: fit-content;
+  font-size: 26px;
+  color: #7fb2ff;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .quote-profile-content {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-profile-photo {
+    max-width: 280px;
+  }
+
+  .quote-text {
+    font-size: 26px;
+  }
+
+  .quote-meta-text {
+    font-size: 22px;
+  }
+
+  .quote-links a {
+    font-size: 20px;
+  }
+}
+    @media (max-width: 768px) {
+      .seasons-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 1024px) {
+      .hero-inner,
+      .full-layout,
+      .grid-2,
+      .grid-3,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .visual-stack { min-height: auto; }
+      .full-screen { min-height: auto; padding: 40px 0; }
+    }
+
+    @media (max-width: 640px) {
+      .hero-inner { padding-top: 92px; }
+      .hero-card, .card { padding: 22px; }
+      .source-link {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        width: auto;
+        text-align: center;
+      }
+      .two-visuals { grid-template-columns: 1fr; }
+    }
+    .chart-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+    .osd-spacer {
+    height: 1px;
+    min-height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    }
+    #osd .placeholder.tall {
+    padding: 16px 12px 20px;
+    height: 720px;
+    display: flex;
+    flex-direction: column;
+    }
+
+    #osd .chart-footer {
+    width: 100%;
+}
+.rating-card {
+  padding: 32px;
+  text-align: center;
+}
+
+.rating-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-items: center;
+}
+
+.rating-item {
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  text-align: center;
+}
+
+.rating-label {
+  font-size: 14px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.rating-value {
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.rating-desc {
+  font-size: 16px;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.4;
+}
+.full-image-block {
+  width: min(calc(100% - 32px), var(--max));
+  margin: 40px auto 0;
+}
+
+.image-wrapper {
+  aspect-ratio: 16 / 9;
+  border-radius: 28px;
+  overflow: hidden;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: var(--shadow);
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.image-caption {
+  color: rgba(255,255,255,0.9);
+}
+
+.image-source {
+  color: var(--muted);
+  text-align: right;
+}
+
+.rating-max {
+  background: rgba(229,23,29,.12);
+  border: 1px solid rgba(229,23,29,.3);
+}
+
+.rating-avg {
+  background: rgba(255,255,255,.06);
+}
+  </style>
+</head> 
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <div class="brand">Olga Kulishenko</div>
+      <div class="date">22.03.2026</div>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="hero-media"></div>
+    <a class="source-link" href="https://unsplash.com/photos/a-black-square-with-a-red-n-on-it-sOU09hnONrQ" target="_blank" rel="noopener">Image source</a>
+
+    <div class="hero-inner">
+      <div class="hero-card glass">
+        
+        <h1>At the Limits of Audience Engagement: When Does Interest in Netflix Series Begin to Decline</h1>
+        <div class="subtitle">The Impact of Increasing Episode Runtime and Season Scale on Global Audience Engagement: A Case Study of Stranger Things and The Umbrella Academy (2016–2026)</div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider">
+    <p id="summary">Does the increasing runtime and expanding scale of Netflix series enhance audience engagement, or does it ultimately diminish viewers’ interest? Using Stranger Things and The Umbrella Academy as case studies, this research examines audience ratings, viewership data, and search activity between 2016 and 2026 to identify the factors that most effectively sustain audience engagement — whether extended viewing time, large-scale marketing campaigns, or the strength of the creators’ artistic vision.</p>
+  </div>
+
+  <section class="section section-top" id="method">
+    <div class="container grid-2 wide-cards">
+      <article class="card glass">
+        <div class="kicker">Why Does It Matter</div>
+        <p>The aim of this study is to examine how changes in the production format of Netflix series — specifically episode length, total season runtime, the number of episodes, and the expansion of the directing team — influence audience engagement. Audience engagement is assessed through three key indicators: audience ratings, viewership, and online search activity.</p>
+        <p>The study is based on the hypothesis that <b>increasing a season’s runtime and production scale does not necessarily lead to higher levels of audience engagement</b> and may, under certain conditions, coincide with its decline.</p>
+      </article>
+
+      <article class="card glass">
+        <div class="kicker">Previous Research</div>
+        <p>The study <a href="https://www.mdpi.com/2076-0760/8/1/19?utm_source=chatgpt.com">An Experimental Examination of Binge Watching and Narrative Engagement</a> (2019), examines the relationship between binge watching and audience engagement. Using an experimental design, the authors demonstrate that watching multiple episodes consecutively strengthens viewers’ emotional engagement, narrative transportation, and parasocial relationships with fictional characters. At the same time, the study suggests that these effects do not necessarily translate into sustained long-term engagement, highlighting the distinction between immediate emotional involvement and enduring audience interest.</p>
+        <p>A <a href="https://link.springer.com/article/10.1007/s11129-024-09283-2?utm_source=chatgpt.com">study published in Quantitative Marketing and Economics</a> (2024) demonstrates that the relationship between watching intensity and audience engagement is non-linear. These findings reveal an inverse U-shaped pattern, with moderate levels of viewing intensity generating the highest levels of engagement, whereas excessive viewing may reduce audience interest and engagement.
+</p>
+<p>While previous research has examined binge-watching and viewing intensity, less attention has been paid to whether changes in the scale and runtime of individual streaming series affect audience engagement across multiple seasons. This study addresses this question by combining episode-level data with a comparative analysis of two long-running Netflix series.</p>
+
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid-2">
+      <article class="card glass">
+        <div class="kicker">Research Methodology</div>
+        <p>This study employs a comprehensive analytical approach to examine the relationship between the production characteristics of television series and audience engagement. The analysis focuses on Stranger Things and The Umbrella Academy, selected as comparable case studies due to their shared genre, distribution platform, and multi-season narrative structure</p>
+        <h3>Data were collected from multiple sources:</h3>
+        <ul class="bullet-list">
+          <li>Google Trends data were used to assess changes in audience interest over time through online search activity;</li>
+          <li>User ratings and vote counts were collected from IMDb and comparable review platforms;</li>
+          <li>Content characteristics (episode runtime, number of episodes, season structure, composition of the directing team).</li>
+        </ul>
+        <h3>The collected data were cleaned and aggregated:</h3>
+        <ul class="bullet-list">
+          <li>Average ratings were calculated for both individual episodes and entire seasons;</li>
+          <li>Audience engagement indicators (e.g., Google Trends indices) were normalized to ensure comparability across data sources;</li>
+          <li>Standardized metrics were constructed, including average episode runtime, average number of user votes, and other comparable measures.</li>
+        </ul>
+        <h3>The following analytical methods and tools were employed:</h3>
+        <ul class="bullet-list">
+          <li>Descriptive statistics were used to identify overall trends in the data;</li>
+          <li>Pearson correlation analysis was conducted to examine the relationship between episode runtime and audience ratings;</li>
+          <li>Comparative case study analysis was used to identify both recurring and divergent patterns across the two series.</li>
+        </ul>
+        <p>This framework was used to examine relationships between production scale and audience engagement while considering contextual factors such as marketing, final-season status, and broader media events.</p>
+      </article>
+
+      <article class="card glass">
+        <div class="kicker">Context</div>
+        <p>By the time their final seasons were released, both Stranger Things and The Umbrella Academy were established Netflix series, with both reaching the platform’s <a href="https://www.netflix.com/tudum/top10/tv">Top 10</a> during their first week of release.</p>
+      </article>
+    </div>
+  </section>
+
+  
+
+  <section class="section full-screen" id="osd">
+    <div class="container full-layout">
+      <div class="visual-stack">
+        <div class="placeholder tall glass" style="display: flex; flex-direction: column;">
+            <div class="chart-header">
+                <h2 class="chart-title">Search Popularity of Stranger Things <span class="chart-accent">Stranger Things</span> 2016–2026</h2>
+                <p class="chart-subtitle">Google Trends search interest index (%) for the query <span class="chart-accent">Stranger Things</span>, where 100% represents the peak search interest during <br>during the 2016–2026 period.</p>
+            </div>
+            <div class="chart-container">
+                <div class="chart-y-label">Search Interest Index (%)</div>
+                <canvas id="osdChart"></canvas>
+                <div class="chart-x-label">Year</div>
+            </div>
+            <div class="chart-footer">
+                <span class="chart-source">
+                Data source: 
+                    <a href="https://trends.google.com/trends/explore?date=2016-01-01%202026-01-13&q=Stranger%20Things" target="_blank">
+                        Google Trends</a>, 2016–2026
+                </span>
+                <span class="chart-authors">Olga Kulishenko, Moscow 2026</span>
+            </div>
+        </div>
+        <div class="osd-spacer" aria-hidden="true"></div>
+      </div>
+
+      <article class="card glass">
+        <div class="kicker">Stranger things</div>
+        <p>During the first half of 2016, public interest in Stranger Things remained at its lowest recorded level, <b>reaching just 1 point on the Google Trends index</b>. This is unsurprising, given that the series premiered on July 15, 2016, and had originally been announced in April 2015 under its working title, Montauk, <a href="https://variety.com/2015/tv/news/stranger-things-netflix-1201489634/" target="_blank">as reported by Variety</a>.</p>    
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid-2">
+      <article class="card glass">
+        <p>Search interest reached its highest level in January 2026, nearly a decade after the series premiered. This indicates that Stranger Things was able to generate renewed audience attention across multiple release cycles rather than concentrating interest around its initial launch.</p>
+        <p>The mean search interest index is approximately 9.45, compared with a median of 5, indicating a positively skewed distribution. Audience attention was therefore concentrated around major release periods, with sharp peaks surrounding new seasons followed by longer periods of lower but persistent interest.</p>
+        <p>However, the peak observed in 2026 shouldn’t be interpreted as an absolute positive record driven solely by the series’ quality or high levels of fan appreciation, as such indicators are not measured within this dataset. It is important to consider that audience interest may also have been influenced by external factors, including the COVID-19 pandemic, which accelerated the growth of streaming consumption in 2020–2021, as well as broader social trends and media discussions surrounding cast members. For example, in August 2022, one month after the release of the fourth season, one of the main cast members of Stranger Things, Millie Bobby Brown, gave an interview with <a href="https://www.allure.com/story/millie-bobby-brown-cover-interview-september-2022" target="_blank">Allure</a> in which she spoke about alleged harassment she had experienced from a former boyfriend. The interview received significant media attention, which may have contributed to increased public interest in the series during this period.
+</p>
+      </article>
+      <div class="grid-2">
+        <div class="card glass votes-card">
+          <h3>Number of Votes</h3>
+          <div class="votes-grid">
+            <div class="vote-item vote-min">
+              <div class="vote-label">Minimum</div>
+              <div class="vote-value count-up">38 273</div>
+              <div class="vote-desc">Season 3, Episode 5<br>“Chapter Five: The Flayed”</div>
+            </div>
+
+            <div class="vote-item vote-max">
+              <div class="vote-label">Maximum</div>
+              <div class="vote-value count-up">182 353</div>
+              <div class="vote-desc">Season 5, Episode 7<br>“Chapter Seven: The Bridge”</div>
+            </div>
+          </div>
+        </div>
+      <article class="card glass">
+        <div class="kicker">Episode Ratings: What Happened</div>
+      <p>The fifth season was widely perceived as <a href="https://www.kinopoisk.ru/media/news/4011509/?utm_referrer=yandex.ru">the culmination</a> of a decade-long narrative. Over the course of those ten years, Stranger Things evolved from a nostalgic science-fiction series into a global cultural phenomenon. Final episodes of long-running series often become media events in their own right: viewers who disengaged during earlier seasons may return, social media discussion intensifies, search activity increases, and media outlets publish analyses, recaps, and theories. As a result, audiences do more than simply watch an episode — they actively register their engagement through ratings, votes, and online discussion.</p>
+      <p>Following the release of the penultimate episode of the final season, rumors began circulating online about allegedly deleted scenes. In an attempt to draw the attention of the series’ directors and writers, fans launched <a href="https://www.change.org/p/the-unseen-footage-stranger-things-s5-vol-2?recruiter=1398273776&recruited_by_id=2b31a9d0-e371-11f0-9ea0-f164ec676ffc&utm_source=share_petition&utm_campaign=psf_combo_share_initial&utm_term=1d788e4a266045389b66bba3b357c71f&utm_medium=copylink&utm_content=cl_sharecopy_490941774_en-US%3A3">a petition</a> calling for the unreleased footage to be made public. The controversy was also accompanied by coordinated attempts to lower the episode’s rating through negative voting.</p>
+      <p>Positioned midway through the third season, the episode with the fewest user votes appeared at a point when the initial excitement had already subsided, while the narrative tension leading into the finale had yet to reach its peak.</p>
+      </article>
+      </div>
+        <div class="card glass votes-card">
+          <h3>Number of Votes per Episode, by Season</h3>
+
+          <div class="votes-grid seasons-grid">
+            <div class="vote-item">
+              <div class="vote-label">Season 1</div>
+              <div class="vote-value count-up">46 806</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Season 2</div>
+              <div class="vote-value count-up">43 089</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Season 3</div>
+              <div class="vote-value count-up">41 805</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Season 4</div>
+              <div class="vote-value count-up">50 565</div>
+            </div>
+
+            <div class="vote-item vote-max">
+              <div class="vote-label">Season 5</div>
+              <div class="vote-value count-up">107 549</div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container full-layout">
+      <div class="visual-stack">
+        <div class="two-visuals">
+          <div class="placeholder glass large">
+            <div class="placeholder-label">
+              <img src="images/image1.PNG" class="zoomable">
+            </div>
+          </div>
+          <div class="placeholder glass large">
+            <div class="placeholder-label">
+              <img src="images/image7.PNG" class="zoomable">
+            </div>
+          </div>
+        </div>
+        <div id="lightbox">
+          <img id="lightbox-img">
+        </div>
+        <div class="card glass image-caption-block">
+          <p>Stranger Things brand collaborations with Pandora and Starbucks</p>
+          <p class="muted">
+            Sources:
+            <a href="https://www.instagram.com/snackolator?igsh=NXhkYjc2MDluN3Rl" target="_blank">Snackolator</a>   
+            and
+            <a href="https://www.instagram.com/p/DRewENmjPxJ/?igsh=cDNreHRuZ2wxcmly" target="_blank">Pandora</a>
+            on instagram
+          </p>
+        </div>
+
+      </div>
+
+      <article class="card glass">
+          <p>The change in the number of votes across seasons reveals a notable pattern. Audience engagement gradually declined from the first to the third season — a trajectory often observed in long-running series, as the initial novelty gives way to more stable but less intensive attention. The fourth season shows a renewed increase in engagement, while the fifth marks a dramatic surge, coinciding with the conclusion of the story and an extensive promotional campaign that included international <a href="https://www.newsbytesapp.com/news/entertainment/stranger-things-5-netflix-announces-world-press-tour/story">press tours</a> and collaborations with a wide range of brands.</p>
+      </article>
+
+    </div>
+  </section>
+   <section class="section">
+    <div class="container grid-2">
+      <div class="card glass votes-card">
+          <h3>Episode Ratings</h3>
+
+          <div class="votes-grid">
+            <div class="vote-item vote-min">
+              <div class="vote-label">Lowest rating</div>
+              <div class="vote-value">
+                <span class="count-up">5,7</span>/10
+              </div>
+              <div class="text">Season 5, Episode 7 — “Chapter Seven: The Bridge”</div>
+            </div>
+
+            <div class="vote-item vote-max">
+              <div class="vote-label">Highest rating</div>
+              <div class="vote-value">
+                <span class="count-up">9,6</span>/10
+              </div>
+              <div class="text">Season 4, Episode 7 — “Chapter Seven: The Massacre at Hawkins Lab”</div>
+            </div>
+
+          </div>
+          <p></p>
+           <p><b>The lowest rating</b> was received by the previously discussed episode “Chapter Seven: The Bridge.” First, the low score may reflect unmet audience expectations: previous seasons had set a high benchmark, the series was approaching its conclusion, yet some viewers perceived the narrative as progressing too slowly. Second, both media outlets and fans <a href="https://www.forbes.com/sites/paultassi/2025/12/27/stranger-things-season-5s-rotten-tomatoes-imdb-scores-are-crashing/">criticized</a> the episode for devoting excessive attention to characters who had played relatively minor roles elsewhere in the series, as well as for the performances of Millie Bobby Brown and Finn Wolfhard as Eleven and Mike. Third, a substantial portion of the episode is devoted to a scene in which Will Byers (Noah Schnapp) comes out as gay to his friends. The scene became a particularly contentious point in the episode’s reception. Some viewers <a href="https://nordic.ign.com/stranger-things/102416/news/stranger-things-season-5-episode-7-sparks-review-bomb-battle-as-fans-combat-backlash-to-hotly-debate">accused Netflix</a> of promoting a “gay agenda” to younger audiences and criticized the Duffer Brothers for, in their view, prioritizing politics over storytelling.</p>
+          <p><b>The highest rating</b> was received by Season 4, Episode 7.  For the first time in the series, the fourth season was not released in its entirety on a single day, but divided into two volumes. Episode 7 therefore served as the conclusion to the first volume, <a href="https://www.tvinsider.com/gallery/stranger-things-best-episodes-ranked/#9">generating anticipation</a> for the final two episodes. The episode also reveals the identity of the season’s main antagonist through a major plot twist, which may have further contributed to its strong audience reception.</p>
+      </div> 
+    </div>
+  </section>
+  <section class="section">
+    <div class="container grid-2">
+          <div class="card glass votes-card">
+          <h3>Episode Runtime</h3>
+
+          <div class="votes-grid rate-grid">
+            <div class="vote-item">
+              <div class="vote-label">Shortest episode</div>
+              <div class="vote-value">
+                <span class="count-up">41</span> min
+              </div>
+              <div class="text">Season 1, Episode 7 — “Chapter Seven: The Bathtub”</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Longest episode</div>
+              <div class="vote-value">
+                <span class="count-up">139</span> min
+              </div>
+              <div class="text">Season 4, Episode 9 — “Chapter Nine: The Piggyback”</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Average episode runtime</div>
+              <div class="vote-value">
+                ~ <span class="count-up">63</span> min
+              </div>
+            </div>
+            
+          </div>
+          <p></p>
+          <p>An analysis of the series’ runtime shows that Season 1 had the shortest average episode runtime, at approximately <b>49 minutes</b>. This is characteristic of many first seasons, when a series has yet to expand in scale and develop more complex narrative structures. At the same time, Season 1 received one of the highest average audience ratings, at <b>8.7</b>, suggesting that relatively compact episodes were compatible with strong audience reception.</p>
+          <p>Episode runtimes increased across subsequent seasons, with the most substantial shift occurring in <b>Season 4</b>, when the average episode length reached approximately <b>84 minutes</b>. Despite this considerable increase, <b>Season 4</b> maintained a high average audience rating of <b>8.6</b>. This suggests that longer runtimes don’t necessarily lead to lower audience engagement, provided the content continues to meet viewers’ expectations.</p>
+          <p><b>Season 5</b>, however, had an average episode runtime of approximately <b>77 minutes</b> and saw a substantial decline in its average rating to <b>7.9</b>. This suggests that longer runtimes, when not supported by sufficiently substantial content and tightly structured storytelling, may make episodes feel unnecessarily drawn out. The decline may also reflect issues with pacing and narrative development, which could have contributed to audience disappointment, particularly given the heightened expectations surrounding the conclusion of the series.</p>
+          <p>The Pearson correlation coefficient between episode runtime and average rating is <b>0.097</b>. It indicates an extremely weak positive correlation — effectively, little to no linear relationship between the two variables. An episode with a runtime of approximately 50 minutes has an expected average rating of around 8.3, while even at 120 minutes, the predicted rating remains within roughly the same range, at <b>8.3–8.4</b>. On the rating scale used by streaming audiences, this difference is practically negligible.</p>
+      </div>
+    
+  </section>
+
+
+
+  <section class="section full-screen" id="osd-probability">
+  <div class="container">
+    <div class="placeholder tall glass probability-block" style="display: flex; flex-direction: column; height: 880px;">
+      <div class="chart-header">
+        <h1 class="chart-title">Relationship Between Episode Rating and Runtime</h2>
+        <p class="chart-subtitle">Pearson correlation between <span class="chart-accent">Stranger Things </span>runtime (in minutes) and average episode rating</p>
+      </div>
+
+      <div class="chart-container" style="flex: 1; position: relative;">
+        <div class="chart-y-label">Average Episode Rating</div>
+          <canvas id="osdRuntimeRatingChart"></canvas>
+        <div class="chart-x-label"> Runtime (min)</div>
+      </div>
+
+      <div class="chart-footer">
+        <span class="chart-source">
+          Data source: 
+          <a href="https://github.com/Kree1l/strangethingsdataset" target="_blank" rel="noopener">
+            GitHub</a>, 2016–2026
+        </span>
+        <span class="chart-authors">Olga Kulishenko, Moscow 2026</span>
+      </div>
+    </div>
+  </div>
+</section>
+  <section class="section">
+    <div class="container grid-2">
+      <article class="card glass">
+        <div class="kicker">What About the Directors</div>
+        <p>First, <b>Andrew Stanton</b> has the highest average rating, although he directed only two episodes. With such a small sample, however, the result cannot be considered statistically robust, as a single highly rated episode can substantially raise the overall average.</p>
+        <p>Second, the work of the <b>Duffer Brothers</b> provides the most informative case: they directed 23 episodes, with an average rating of <b>8.61</b>. Given the substantially larger number of observations, this figure can be considered the most representative of the dataset. It suggests that the series’ core creative team maintained a consistently high level of audience reception across multiple seasons.</p>
+        <p>Interestingly, <b>Shawn Levy</b>, who directed nine episodes, suggested that his directorial approach was closely aligned with the series’ established style and creative vision.</p>
+        <p>One anomaly is particularly worth noting: the episode co-directed <b>by the Duffer Brothers and Shawn Levy received a rating of 5.7</b> — the previously discussed Episode 7 from Season 5. Since this represents only a single episode, it cannot be considered representative of the directors’ overall work. However, it demonstrates that even within an otherwise consistent creative framework, individual episodes can perform poorly.</p>
+      </article>
+
+  </section>
+<section class="section full-screen" id="osd-probability">
+  <div class="container">
+    <div class="placeholder tall glass probability-block" style="display: flex; flex-direction: column; height: 880px;">
+      <div class="chart-header">
+        <h2 class="chart-title">Average Episode Ratings <span class="chart-accent">by Director</span></h2>
+        <p class="chart-subtitle">Average ratings of<span class="chart-accent"> Stranger Things</span> episodes grouped by director</p>
+        <p class="chart-charttype" style="font-size: 14px; text-align: left;">Sorted in Descending Order</p>
+      </div>
+
+      <div class="chart-container" style="flex: 1; position: relative;">
+        <div class="chart-y-label">Average Episode Rating</div>
+          <canvas id="osdDirectorRatingChart"></canvas>
+        <div class="chart-x-label">Director</div>
+      </div>
+
+      <div class="chart-footer">
+        <span class="chart-source">
+          Data source: 
+          <a href="https://github.com/Kree1l/strangethingsdataset" target="_blank" rel="noopener">
+            GitHub</a>, 2016–2026
+        </span>
+        <span class="chart-authors">Olga Kulishenko, Moscow 2026</span>
+      </div>
+    </div>
+  </div>
+</section>
+  <section class="section">
+    <div class="container grid-2">
+      <article class="card glass">
+        <p>The results suggest an association between creative continuity and consistently strong audience reception. Episodes directed by the Duffer Brothers maintained a high average rating across a substantially larger sample than those of other directors, although the data do not establish a causal relationship between directorial continuity and audience engagement.</p>
+      </article>
+
+  </section>
+
+
+
+
+
+
+
+
+<section class="section full-screen" id="umbrella">
+  <div class="container full-layout">
+
+    <article class="card glass">
+      <div class="kicker">The Umbrella Academy</div>
+      <p>Interest in The Umbrella Academy remained at its lowest level from January 2016 through December 2018, even though plans to develop a series based on the comic books had been reported as early as July 2015, according to <a href="https://www.usatoday.com/story/life/tv/2015/07/07/universal-cable-dark-horse-entertainment-set-first-look-deal/29813237/" target="_blank" rel="noopener">USA Today</a>. The series itself premiered on February 15, 2019. This prolonged period of limited public attention reflects a common industry pattern: considerable time often passes between the initial announcement and the release of a finished series, while pre-release marketing activity may remain relatively limited.
+</p>
+      
+    </article>
+
+    <div class="visual-stack">
+      <div class="placeholder tall glass" style="display: flex; flex-direction: column; height: 800px;">
+        <div class="chart-header">
+          <h2 class="chart-title">Search Popularity of <span class="chart-accent">The Umbrella Academy</span> 2016–2026</h2>
+          <p class="chart-subtitle">Google Trends search interest index (%) for the query <span class="chart-accent">The Umbrella Academy</span>, where 100 represents the peak search interest during the 2016–2026 period.</p>
+        </div>
+
+        <div class="chart-container" style="flex: 1; position: relative;">
+          <div class="chart-y-label">Search Interest Index (%)</div>
+          <canvas id="umbrellaChart"></canvas>
+          <div class="chart-x-label">Year</div>
+        </div>
+
+        <div class="chart-footer">
+          <span class="chart-source">
+            Data source:
+            <a href="https://trends.google.com/trends/explore?date=2016-01-01%202026-01-13&q=Umbrella%20Academy" target="_blank" rel="noopener">Google Trends</a>, 2016–2026
+          </span>
+          <span class="umbrella-mark" aria-hidden="true" style="font-size: 35px;">☂</span>
+          <span class="chart-authors">Olga Kulishenko, Moscow 2026</span>
+        </div>
+      </div>
+
+      <div class="osd-spacer" aria-hidden="true"></div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+
+
+  <section class="section">
+    <div class="container grid-2">
+      <article class="card glass">
+        <p>Interest surged dramatically in August 2020, and several factors may help explain this spike. First, the second season was released on July 31, 2020, and went on to become particularly popular among fans. As <a href="https://www.businessinsider.com/umbrella-academy-season-2-biggest-netflix-hit-since-the-witcher-2020-9">Business Insider</a> reported, the series even surpassed The Witcher in popularity during this period, indicating a strong audience response. Second, the broader context of 2020 cannot be overlooked: the COVID-19 pandemic and the resulting lockdowns substantially increased demand for streaming services. As <a href="https://www.usatoday.com/story/life/tv/2015/07/07/universal-cable-dark-horse-entertainment-set-first-look-deal/29813237/">Vulture</a> noted, streaming platforms experienced exceptionally high levels of consumption during the summer of 2020, creating favorable conditions for increased viewership and online discussion. The August 2020 peak can therefore be understood as the result of at least two overlapping factors: the strong reception of the second season and the external circumstances that accelerated streaming consumption.</p>
+        <p>The data reveal a pronounced asymmetry in the distribution of audience interest: the mean search interest index is approximately <b>7.8</b>, while the median is <b>only 3</b>. This suggests the series spent most of its lifespan attracting relatively limited attention, punctuated by rare but intense spikes in interest. Such a pattern is typical of series whose popularity is concentrated around particular events. In this case, one season clearly broke through, while subsequent seasons failed to generate comparable levels of audience interest. During quieter periods, the series retained a degree of audience loyalty but generated relatively little active engagement. The Umbrella Academy effectively surged during the pandemic but failed to sustain that momentum beyond it, as suggested by the progressively weaker peaks surrounding the releases of Seasons 3 and 4.</p>
+      </article>
+      <div class="grid-2">
+        <div class="card glass votes-card">
+          <h3>Number of Votes</h3>
+          <div class="votes-grid">
+            <div class="vote-item vote-min">
+              <div class="vote-label">Minimum</div>
+              <div class="vote-value count-up">2656</div>
+              <div class="vote-desc">Season 4, Episode 4<br>“The Purge”</div>
+            </div>
+
+            <div class="vote-item vote-max">
+              <div class="vote-label">Maximum</div>
+              <div class="vote-value count-up">7641</div>
+              <div class="vote-desc">Season 1, Episode 1<br>“We Only See Each Other at Weddings and Funerals”</div>
+            </div>
+          </div>
+        </div>
+      <article class="card glass">
+        <div class="kicker">Episode Ratings: What Happened</div>
+        <p><b>The episode with the highest number of votes</b> was the pilot episode. In 2019, The Umbrella Academy was a new Netflix release that attracted significant attention through a variety of creative promotional campaigns and outdoor advertising initiatives surrounding its launch. For example, Netflix installed a giant umbrella featuring the series’ logo on Merewether Beach in Newcastle, Australia. <a href="https://www.pedestrian.tv/entertainment/netflix-newcastle-umbrella-academy/" target="_blank" rel="noopener">According to Pedestrian</a>, the structure measured more than 12 meters in width, 6 meters in height, and had a 14-meter-long handle.</p>
+      </article>
+      <div class="full-image-block">
+        <div class="image-wrapper">
+          <img src="images/image3.png" alt="">
+        </div>
+
+      <div class="image-meta">
+        <div class="image-caption" style="font-size: 22px;">
+          Promotional Giant Umbrella for The Umbrella Academy
+        </div>
+
+          <div class="image-source">
+            Source:
+            <a href="http://PEDESTRIAN.TV">PEDESTRIAN.TV</a>
+          </div>
+        </div>
+      </div>
+      <article class="card glass">
+        <p>Such promotional content can quickly become viral, attracting additional attention to the series and its creators. As a result, viewers are more likely to engage with the project and share their opinions about it online.
+        </p>
+        <p>The episode with the fewest votes was Season 4, Episode 4. One possible explanation is that audience interest in the series had declined over time, with the fourth season receiving a particularly negative reception. This is reflected in both a <a href="https://www.cbr.com/reasons-fans-didnt-like-umbrella-academy-season-4/">CBR article</a> discussing the reasons behind fans’ disappointment with the final season and its <a href="https://www.rottentomatoes.com/tv/the_umbrella_academy#seasons">Rotten Tomatoes</a> score, where Season 4 received only 58% from critics (first season received 77%, second and third seasons scored 91%).
+        </p>
+      </article>
+      </div>
+        <div class="card glass votes-card">
+          <h3>Number of Votes per Episode, by Season</h3>
+
+          <div class="votes-grid seasons-umb-grid">
+            <div class="vote-item">
+              <div class="vote-label">Season 1</div>
+              <div class="vote-value count-up">6056</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Season 2</div>
+              <div class="vote-value count-up">4907</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Season 3</div>
+              <div class="vote-value count-up">3568</div>
+            </div>
+
+            <div class="vote-item vote-max">
+              <div class="vote-label">Season 4</div>
+              <div class="vote-value count-up">3257</div>
+            </div>
+          </div>
+          <p>It is also important to examine the trend in the average number of votes across seasons. The first season maintained an average of approximately <b>6,000 votes per episode</b>, whereas the fourth season dropped to just <b>over 3,000</b> This decline reflects a gradual loss of audience interest over the course of the series.</p>
+
+        </div>
+
+        
+      </div>
+
+    </div>
+  </section>
+<section class="section">
+    <div class="container grid-2">
+      <div class="card glass votes-card">
+          <h3>Episode Ratings</h3>
+          <div class="votes-grid">
+            <div class="vote-item">
+              <div class="vote-label">Lowest rating</div>
+              <div class="vote-value">
+                <span class="count-up">4,9</span>/10
+              </div>
+              <div class="text">Season 4, Episode 6 — “The End of the Beginning”</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Highest rating</div>
+              <div class="vote-value">
+                <span class="count-up">8,0</span>/10
+              </div>
+              <div class="text">Season 2, Episode 10 — “The End of Something”»</div>
+            </div>
+          </div>
+
+        <p>The episode with the <b>lowest rating belongs</b> to the final season of the series, which may be connected to the unmet expectations of viewers, as discussed earlier. In contrast, the <b>highest-rated episode</b> comes from Season 2 of The Umbrella Academy, which can be explained by its unexpected narrative twist generated significant discussion among fans on social media. In the episode, the members of the Academy attempt to return to 2019, only to discover that it is not their original home and that the Umbrella Academy has been replaced by the Sparrow Academy.</p>
+      </div> 
+    </div>
+  </section>
+
+<section class="section">
+    <div class="container grid-2">
+          <div class="card glass votes-card">
+          <h3>Episode Runtime</h3>
+
+          <div class="votes-grid rate-grid">
+            <div class="vote-item">
+              <div class="vote-label">Shortest episode</div>
+              <div class="vote-value">
+                <span class="count-up">39</span> min
+              </div>
+              <div class="text">Season 3, Episode 9 — “Seven Bells”</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Longest episode</div>
+              <div class="vote-value">
+                <span class="count-up">69</span> min
+              </div>
+              <div class="text">Season 4, Episode 6 — “The End of the Beginning”</div>
+            </div>
+
+            <div class="vote-item">
+              <div class="vote-label">Average episode runtime</div>
+              <div class="vote-value">
+                ~ <span class="count-up">50</span> min
+              </div>
+            </div>
+            
+          </div>
+          <p>There are no studies, articles, or datasets that provide information on the average runtime of Netflix series (the only related source available is <a href="https://www.whats-on-netflix.com/news/how-long-would-it-take-to-watch-all-of-netflix/">Casey Moore’s article</a> analyzing the total runtime of all Netflix episodes). Therefore, it is difficult to draw a definitive conclusion about whether the series aligns with broader Netflix runtime trends. However, when compared with the previously analyzed Stranger Things, The Umbrella Academy appears to follow the conventions of Netflix’s hour-long series format.</p>
+      </div>
+    
+  </section>
+
+<section class="section full-screen" id="umbrella-runtime">
+  <div class="container">
+    <div class="placeholder tall glass probability-block" style="display: flex; flex-direction: column; height: 880px;">
+      <div class="chart-header">
+        <h1 class="chart-title"><span class="chart-accent">Longer </span> Episodes  — <span class="chart-accent">Lower </span> Ratings</h1>
+        <p class="chart-subtitle">Pearson correlation between <span class="chart-accent">The Umbrella Academy</span>  episode runtime (in minutes) and average episode rating</p>
+        
+      </div>
+
+
+      <div class="chart-container" style="flex: 1; position: relative;">
+        <div class="chart-y-label">Average Episode Rating</div>
+        <canvas id="umbrellaRuntimeRatingChart"></canvas>
+        <div class="chart-x-label">Runtime (min)</div>
+      </div>
+
+      <div class="chart-footer">
+        <span class="chart-source">
+          Data source:
+          <a href="https://www.ratingraph.com/tv-shows/the-umbrella-academy-ratings-33824/" target="_blank" rel="noopener">
+            Rating Graph</a>, 2019–2024
+        </span>
+        <span class="umbrella-mark" aria-hidden="true" style="font-size: 35px;">☂</span>
+        <span class="chart-authors">Olga Kulishenko, Moscow 2026</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container grid-2">
+    <article class="card glass">
+      <p>Furthermore, these results provide additional support for the research hypothesis. Season 2 had <b> the shortest average runtime at 47 minutes</b> and received <b> the highest average audience rating</b>. In contrast, <b>the longest season</b> — and arguably the most resource-intensive in terms of production — Season 4, with an average runtime of 56 minutes, received <b> the lowest rating</b>. The data don’t indicate that viewers inherently dislike longer episodes; rather, the additional runtime appears not to have been filled with content capable of enhancing the overall quality of the series.</p>
+      <p>Here the Pearson correlation coefficient between episode runtime and average rating is <b>−0.567</b>. It indicates a moderate negative linear relationship: in most cases, as episode runtime increases, ratings tend to decrease rather than increase.</p>
+    </article>
+  </div>
+</section>
+
+<section class="section full-screen" id="umbrella-directors">
+  <div class="container">
+    <div class="placeholder tall glass probability-block" style="display: flex; flex-direction: column; height: 880px;">
+      <div class="chart-header">
+        <h2 class="chart-title">Average Episode Ratings by <span class="chart-accent">Director</span></h2>
+        <p class="chart-subtitle">Average ratings of <span class="chart-accent">The Umbrella Academy</span> episodes grouped by director</p>
+        <p class="chart-charttype" style="font-size: 14px; text-align: left;">Sorted in Descending Order</p>
+      </div>
+
+      <div class="chart-container" style="flex: 1; position: relative;">
+        <div class="chart-y-label">Average Episode Rating</div>
+        <canvas id="umbrellaDirectorRatingChart"></canvas>
+        <div class="chart-x-label">Director</div>
+      </div>
+
+      <div class="chart-footer">
+        <span class="chart-source">
+          Source:
+          <a href="https://www.ratingraph.com/tv-shows/the-umbrella-academy-ratings-33824/" target="_blank" rel="noopener">
+            Rating Graph</a>, 2019–2024
+        </span>
+        <span class="umbrella-mark" aria-hidden="true" style="font-size: 35px;">☂</span>
+        <span class="chart-authors">Olga Kulishenko, Moscow 2026</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container grid-2">
+    <article class="card glass">
+      <p>First, the series was directed by <b>12 different directors</b>, each of whom worked <b>on between one and six episodes</b>, pointing to a relatively fragmented creative structure. Since Pearson’s correlation coefficient could not be meaningfully applied to this type of data, the average ratings of the episodes directed by each individual director were calculated instead.
+      </p>
+      <p>Second, the episodes directed by <b>Peter Hoar, Ellen Kuras, and Amanda Marsalis</b> received some of the highest ratings, suggesting that individual directorial vision may have influenced how audiences responded to particular episodes.
+      </p>
+    </article>
+  </div>
+</section>
+<section class="section" id="conclusions">
+  <div class="container">
+    <div class="card glass" style="padding:40px;">
+      <div class="kicker">Conclusions</div>
+      <h2 style="margin-bottom:18px;">The findings support the research hypothesis</h2>
+      <p>Increasing episode runtimes and expanding season scale do not necessarily increase audience engagement and may sometimes have the opposite effect.</p>
+    </div>
+
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card glass" style="padding:32px;">
+        <h3>Scale without quality leads to disappointment</h3>
+        <p> In Stranger Things, the correlation between episode runtime and average rating is effectively zero, while The Umbrella Academy shows a moderate negative relationship. This suggests that longer episodes can reduce engagement when they result in slower pacing or an overstretched narrative. <b> External factors also influence audience engagement</b>. Both series experienced major peaks during the pandemic, when lockdowns increased demand for streaming content.</p>
+      </div>
+
+      <div class="card glass" style="padding:32px;">
+        <h3>External factors also influence audience engagement</h3>
+        <p>Both series experienced major peaks during the pandemic, when lockdowns increased demand for streaming content.</p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card glass" style="padding:32px;">
+        <h3>Marketing strategies can significantly increase audience attention</h3>
+        <p>Promotional campaigns and social media activity can generate additional interest and viewership.</p>
+      </div>
+
+      <div class="card glass" style="padding:32px;">
+        <h3>Final season is an event</h3>
+        <p>Final seasons and episodes can attract high levels of audience participation because of their event status and nostalgia, rather than solely because of their quality or directorial choices.</p>
+      </div>
+    </div>
+
+    <div class="card glass" style="padding:40px; margin-top:18px; border:1px solid rgba(229,23,29,.34); background:linear-gradient(180deg, rgba(229,23,29,.12), rgba(255,255,255,.03));">
+      <div class="kicker">Key Takeaway</div>
+      <p>One of the essential findings is the potential role of creative continuity in sustaining audience interest. Stranger Things, supported by the consistent creative leadership of the Duffers, maintained strong audience engagement over a decade. In contrast, The Umbrella Academy had a more fragmented directorial structure and experienced a decline in ratings and audience activity.
+      </p>
+      <p>Overall, the findings suggest that even with large budgets, extensive marketing, and technological advances, the strongest factor in sustaining audience interest remains unique creative ideas and a distinctive authorial vision.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+const osdLabels = [
+  "2016-01","2016-02","2016-03","2016-04","2016-05","2016-06","2016-07","2016-08","2016-09","2016-10","2016-11","2016-12",
+  "2017-01","2017-02","2017-03","2017-04","2017-05","2017-06","2017-07","2017-08","2017-09","2017-10","2017-11","2017-12",
+  "2018-01","2018-02","2018-03","2018-04","2018-05","2018-06","2018-07","2018-08","2018-09","2018-10","2018-11","2018-12",
+  "2019-01","2019-02","2019-03","2019-04","2019-05","2019-06","2019-07","2019-08","2019-09","2019-10","2019-11","2019-12",
+  "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12",
+  "2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12",
+  "2022-01","2022-02","2022-03","2022-04","2022-05","2022-06","2022-07","2022-08","2022-09","2022-10","2022-11","2022-12",
+  "2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12",
+  "2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12",
+  "2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12",
+  "2026-01"
+];
+
+const osdValues = [
+  1,1,1,1,1,1,10,17,12,7,15,10,
+  5,6,3,2,2,2,4,3,4,25,41,18,
+  13,8,6,5,4,4,4,4,4,4,4,3,
+  4,3,4,3,3,7,54,17,9,9,7,6,
+  6,7,6,8,7,6,6,6,5,6,5,5,
+  6,5,5,5,5,5,6,5,4,3,5,3,
+  4,4,3,6,32,65,72,24,13,10,7,6,
+  6,5,5,5,4,5,5,4,4,4,4,3,
+  4,3,4,4,4,4,6,4,4,4,4,4,
+  4,4,4,4,5,7,7,6,5,10,49,79,
+  100
+];
+
+const ctx = document.getElementById('osdChart');
+
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: osdLabels,
+    datasets: [{
+      data: osdValues,
+      borderColor: '#ff1d25',
+      borderWidth: 3,
+      tension: 0.28,
+      pointRadius: 0,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: '#ff1d25',
+      pointHoverBorderColor: '#ffffff',
+      pointHoverBorderWidth: 1.5,
+      fill: false
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 34,
+        right: 20,
+        bottom: 20,
+        left: 25
+      }
+    },
+    interaction: {
+      mode: 'index',
+      intersect: false
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: '#0f1a26',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#E5171D',
+        borderWidth: 1,
+        displayColors: false,
+        padding: 10,
+        callbacks: {
+          title: function(items) {
+            return items[0].label;
+          },
+          label: function(context) {
+            return 'Index: ' + context.parsed.y;
+          }
+        }
+      },
+      annotation: {
+        clip: false,
+        annotations: {
+          peak2016: {
+            type: 'label',
+            xValue: '2016-10',
+            yValue: 15,
+            content: ['August–November 2016', 'Season 1 released'],
+            width: 120,
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: 3,
+            yAdjust: -50,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+
+          peak2017: {
+            type: 'label',
+            xValue: '2017-11',
+            yValue: 41,
+            content: ['November 2017', 'Season 2 released'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: -18,
+            yAdjust: -42,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+
+          peak2019: {
+            type: 'label',
+            xValue: '2019-07',
+            yValue: 54,
+            content: ['July 2019', 'Season 3 released'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: 8,
+            yAdjust: -42,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+
+          peak2022: {
+            type: 'label',
+            xValue: '2022-06',
+            yValue: 69,
+            content: ['June 2022', 'Season 4 released'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: 10,
+            yAdjust: -65,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+
+          peak2025: {
+            type: 'label',
+            xValue: '2025-07',
+            yValue: 79,
+            content: ['December 2025', 'Season 5 released'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: -18,
+            yAdjust: -56,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: 'rgba(255,255,255,0.8)',
+          autoSkip: false,
+          maxRotation: 0,
+          minRotation: 0,
+          callback: function(value, index) {
+            const label = this.getLabelForValue(value);
+            return label.endsWith('-01') ? label.slice(0, 4) : '';
+          }
+        },
+        grid: {
+          display: false
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      },
+      y: {
+        min: 0,
+        max: 100,
+        ticks: {
+          stepSize: 10,
+          color: 'rgba(255,255,255,0.8)'
+        },
+        title: {
+          display: false
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.12)',
+          lineWidth: 1
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      }
+    }
+  }
+});
+</script>
+<script>
+function animateCount(el, duration = 1200) {
+  const text = el.textContent.trim();
+
+
+  const number = parseFloat(text.replace(/\s/g, '').replace(',', '.'));
+
+  if (isNaN(number)) return;
+
+  const isFloat = text.includes('.') || text.includes(',');
+
+  let start = 0;
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const progress = Math.min((currentTime - startTime) / duration, 1);
+
+    const value = start + (number - start) * progress;
+
+    if (isFloat) {
+      el.textContent = value.toFixed(1);
+    } else {
+      el.textContent = Math.floor(value).toLocaleString('ru-RU');
+    }
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      el.textContent = isFloat
+        ? number.toFixed(1)
+        : number.toLocaleString('ru-RU');
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCount(entry.target);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.count-up').forEach(el => {
+  observer.observe(el);
+});
+</script>
+<script>
+const runtimeRatingCtx = document.getElementById('osdRuntimeRatingChart');
+
+const runtimeRatingData = [
+  { x: 47, y: 8.6 }, { x: 55, y: 8.3 }, { x: 51, y: 8.8 }, { x: 49, y: 8.9 },
+  { x: 52, y: 8.6 }, { x: 46, y: 8.8 }, { x: 41, y: 9.0 }, { x: 54, y: 9.3 },
+
+  { x: 48, y: 8.1 }, { x: 56, y: 8.2 }, { x: 51, y: 8.5 }, { x: 46, y: 8.5 },
+  { x: 58, y: 8.8 }, { x: 51, y: 9.1 }, { x: 45, y: 6.0 }, { x: 47, y: 9.2 },
+  { x: 62, y: 9.3 },
+
+  { x: 50, y: 7.8 }, { x: 50, y: 7.9 }, { x: 49, y: 8.2 }, { x: 52, y: 8.9 },
+  { x: 51, y: 8.5 }, { x: 59, y: 8.5 }, { x: 55, y: 8.7 }, { x: 77, y: 9.3 },
+
+  { x: 75, y: 8.1 }, { x: 62, y: 8.3 }, { x: 77, y: 9.5 },
+  { x: 74, y: 8.1 }, { x: 73, y: 8.5 }, { x: 98, y: 9.6 }, { x: 84, y: 8.7 },
+  { x: 139, y: 9.2 },
+
+  { x: 71, y: 7.9 }, { x: 57, y: 8.3 }, { x: 69, y: 8.5 }, { x: 86, y: 9.4 },
+  { x: 68, y: 7.9 }, { x: 75, y: 8.0 }, { x: 66, y: 5.7 }, { x: 128, y: 7.6 }
+];
+
+const trendline = [
+  { x: 40,  y: 8.3697 },
+  { x: 140, y: 8.7373 }
+];
+
+new Chart(runtimeRatingCtx, {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        data: runtimeRatingData,
+        backgroundColor: '#E5171D',
+        borderColor: '#ffffff',
+        borderWidth: 1.2,
+        pointRadius: function(ctx) {
+          const x = ctx.raw.x;
+          if (x === 50 || x === 120) return 7;
+          return 5;
+        },
+        pointHoverRadius: 9,
+        pointHoverBackgroundColor: '#ffffff',
+        pointHoverBorderColor: '#E5171D',
+        pointHoverBorderWidth: 2
+      },
+      {
+        type: 'line',
+        data: trendline,
+        borderColor: 'rgba(255,255,255,0.65)',
+        borderWidth: 2,
+        borderDash: [7, 7],
+        pointRadius: 0,
+        fill: false,
+        tension: 0
+      },
+
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 40,
+        right: 30,
+        bottom: 20,
+        left: 20
+      }
+    },
+    interaction: {
+      mode: 'nearest',
+      intersect: false
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: '#0f1a26',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#E5171D',
+        borderWidth: 1,
+        displayColors: false,
+        padding: 10,
+        callbacks: {
+          title: function(context) {
+            const p = context[0].raw;
+            if (p.x === 50 && p.y === 8.3) return;
+            if (p.x === 120 && p.y === 8.35) return;
+            return;
+          },
+          label: function(context) {
+            return [
+              'Runtime: ' + context.raw.x + ' min',
+              'Rating episode: ' + context.raw.y + '/10'
+            ];
+          }
+        }
+      },
+      annotation: {
+        annotations: {
+          corrBox: {
+            type: 'label',
+            xValue: 107,
+            yValue: 9,
+            content: ['R = 0,097'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(229,23,29,0.16)',
+            borderColor: 'rgba(229,23,29,0.45)',
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 8,
+            font: {
+              size: 12,
+              weight: '600'
+            }
+          },
+
+        }
+},
+
+
+    },
+
+    
+    scales: {
+      x: {
+        min: 35,
+        max: 145,
+        ticks: {
+          stepSize: 10,
+          color: 'rgba(255,255,255,0.8)'
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.08)'
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      },
+      y: {
+        min: 5,
+        max: 10,
+        ticks: {
+          stepSize: 0.5,
+          color: 'rgba(255,255,255,0.8)'
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.12)'
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      }
+    }
+  }
+});
+</script>
+<script>
+const directorRatingCtx = document.getElementById('osdDirectorRatingChart');
+
+const directorLabels = [
+  ['ANDREW STANTON'],
+  ['SHAWN LEVY'],
+  ['THE DUFFERS'],
+  ['UTA BRIESEWITZ'],
+  ['NIMRÓD ANTAL'],
+  ['FRANK DARABONT'],
+  ['REBECCA THOMAS'],
+  ['THE DUFFERS', ' SHAWN LEVY']  
+];
+
+const directorValues = [
+  8.95,
+  8.62,
+  8.61,
+  8.50,
+  8.30,
+  8.20,
+  6.00,
+  5.70 
+  
+  
+];
+
+const valueLabelPlugin = {
+  id: 'valueLabelPlugin',
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '600 12px "Advent Pro", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+
+    meta.data.forEach((bar, index) => {
+      const value = directorValues[index].toFixed(2);
+      ctx.fillText(value, bar.x, bar.y - 6);
+    });
+
+    ctx.restore();
+  }
+};
+
+new Chart(directorRatingCtx, {
+  type: 'bar',
+  data: {
+    labels: directorLabels,
+    datasets: [{
+      data: directorValues,
+      backgroundColor: [
+        'rgba(229, 23, 29, 0.88)',
+        'rgba(229, 23, 29, 0.80)',
+        'rgba(229, 23, 29, 0.76)',
+        'rgba(229, 23, 29, 0.70)',
+        'rgba(229, 23, 29, 0.62)',
+        'rgba(229, 23, 29, 0.56)',
+        'rgba(229, 23, 29, 0.44)',
+        'rgba(229, 23, 29, 0.36)'
+      ],
+      borderColor: '#ffffff',
+      borderWidth: 1.2,
+      borderRadius: 8,
+      borderSkipped: false,
+      hoverBackgroundColor: '#ffffff',
+      hoverBorderColor: '#E5171D',
+      hoverBorderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 42,
+        right: 20,
+        bottom: 14,
+        left: 8
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: '#0f1a26',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#E5171D',
+        borderWidth: 1,
+        displayColors: false,
+        padding: 10,
+        callbacks: {
+          title: function(items) {
+            const label = items[0].label;
+            return Array.isArray(label) ? label.join(' ') : label;
+          },
+          label: function(context) {
+            return 'Avarage rating: ' + context.parsed.y.toFixed(2) + '/10';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: 'rgba(255,255,255,0.82)',
+          maxRotation: 0,
+          minRotation: 0,
+          font: {
+            size: 11
+          }
+        },
+        grid: {
+          display: false
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      },
+      y: {
+        min: 0,
+        max: 10,
+        ticks: {
+          stepSize: 1,
+          color: 'rgba(255,255,255,0.82)'
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.12)',
+          lineWidth: 1
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      }
+    }
+  },
+  plugins: [valueLabelPlugin]
+});
+</script>
+<script>
+const umbrellaLabels = [
+  "2016-01","2016-02","2016-03","2016-04","2016-05","2016-06","2016-07","2016-08","2016-09","2016-10","2016-11","2016-12",
+  "2017-01","2017-02","2017-03","2017-04","2017-05","2017-06","2017-07","2017-08","2017-09","2017-10","2017-11","2017-12",
+  "2018-01","2018-02","2018-03","2018-04","2018-05","2018-06","2018-07","2018-08","2018-09","2018-10","2018-11","2018-12",
+  "2019-01","2019-02","2019-03","2019-04","2019-05","2019-06","2019-07","2019-08","2019-09","2019-10","2019-11","2019-12",
+  "2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12",
+  "2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12",
+  "2022-01","2022-02","2022-03","2022-04","2022-05","2022-06","2022-07","2022-08","2022-09","2022-10","2022-11","2022-12",
+  "2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12",
+  "2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12",
+  "2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12",
+  "2026-01"
+];
+
+const umbrellaValues = [
+  1,1,1,1,1,1,1,1,1,1,1,1,
+  1,1,1,1,1,1,1,1,1,1,1,1,
+  1,1,1,1,1,1,1,1,1,1,1,1,
+  2,90,56,18,9,8,7,6,4,4,4,5,
+  5,5,6,7,7,9,21,100,32,19,18,21,
+  20,16,13,13,12,10,9,9,8,6,5,5,
+  8,6,7,7,8,58,45,13,7,5,4,5,
+  5,5,4,3,3,4,4,3,3,3,2,3,
+  3,4,3,3,4,5,7,41,9,4,3,2,
+  2,2,2,2,2,2,2,2,2,2,2,2,
+  2
+];
+
+const umbrellaCtx = document.getElementById('umbrellaChart');
+
+new Chart(umbrellaCtx, {
+  type: 'line',
+  data: {
+    labels: umbrellaLabels,
+    datasets: [{
+      data: umbrellaValues,
+      borderColor: '#ff1d25',
+      borderWidth: 3,
+      tension: 0.28,
+      pointRadius: 0,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: '#ff1d25',
+      pointHoverBorderColor: '#ffffff',
+      pointHoverBorderWidth: 1.5,
+      fill: false
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 28,
+        right: 20,
+        bottom: 14,
+        left: 8
+      }
+    },
+    interaction: {
+      mode: 'index',
+      intersect: false
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: '#0f1a26',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#E5171D',
+        borderWidth: 1,
+        displayColors: false,
+        padding: 10,
+        callbacks: {
+          title: function(items) {
+            return items[0].label;
+          },
+          label: function(context) {
+            return 'Index: ' + context.parsed.y;
+          }
+        }
+      },
+      annotation: {
+        clip: false,
+        annotations: {
+          peak2019: {
+            type: 'label',
+            xValue: '2019-02',
+            yValue: 85,
+            content: ['February 2019', 'Season 1 released'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: 10,
+            yAdjust: -46,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+
+          peak2020: {
+            type: 'label',
+            xValue: '2021-05',
+            yValue: 85,
+            content: ['August 2020', 'Season 2 released'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: 10,
+            yAdjust: -52,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+          peak2022: {
+            type: 'label',
+            xValue: '2022-06',
+            yValue: 53,
+            content: ['June 2022', 'Season 3 released'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: 12,
+            yAdjust: -44,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+
+          peak2024: {
+            type: 'label',
+            xValue: '2024-08',
+            yValue: 37,
+            content: ['August 2024', 'Season 4 released'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderWidth: 0,
+            xAdjust: 10,
+            yAdjust: -40,
+            textAlign: 'left',
+            font: {
+              size: 12,
+              weight: '500'
+            }
+          },
+
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: 'rgba(255,255,255,0.8)',
+          autoSkip: false,
+          maxRotation: 0,
+          minRotation: 0,
+          callback: function(value) {
+            const label = this.getLabelForValue(value);
+            return label.endsWith('-01') ? label.slice(0, 4) : '';
+          }
+        },
+        grid: {
+          display: false
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      },
+      y: {
+        min: 0,
+        max: 100,
+        ticks: {
+          stepSize: 10,
+          color: 'rgba(255,255,255,0.8)'
+        },
+        title: {
+          display: false
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.12)',
+          lineWidth: 1
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      }
+    }
+  }
+});
+</script>
+<script>
+const umbrellaRuntimeCtx = document.getElementById('umbrellaRuntimeRatingChart');
+
+const umbrellaRuntimeRatingData = [
+  { x: 58, y: 7.7 }, { x: 56, y: 7.7 }, { x: 55, y: 7.8 }, { x: 55, y: 7.9 },
+  { x: 59, y: 8.2 }, { x: 57, y: 8.3 }, { x: 55, y: 8.1 }, { x: 50, y: 8.5 },
+  { x: 44, y: 8.4 }, { x: 46, y: 8.7 },
+
+  { x: 47, y: 8.2 }, { x: 48, y: 8.0 }, { x: 48, y: 8.2 }, { x: 48, y: 8.0 },
+  { x: 47, y: 8.1 }, { x: 50, y: 8.2 }, { x: 47, y: 8.4 }, { x: 46, y: 8.5 },
+  { x: 40, y: 8.7 }, { x: 49, y: 8.9 },
+
+  { x: 50, y: 7.6 }, { x: 52, y: 6.8 }, { x: 49, y: 7.6 }, { x: 51, y: 7.6 },
+  { x: 44, y: 7.4 }, { x: 48, y: 7.3 }, { x: 52, y: 7.7 }, { x: 49, y: 7.1 },
+  { x: 39, y: 7.7 }, { x: 49, y: 7.3 },
+
+  { x: 52, y: 6.6 }, { x: 47, y: 7.2 }, { x: 56, y: 6.7 }, { x: 55, y: 6.4 },
+  { x: 58, y: 5.7 }, { x: 69, y: 4.9 }
+];
+
+const umbrellaTrendline = [
+  { x: 39, y: 8.55 },
+  { x: 69, y: 5.85 }
+];
+
+new Chart(umbrellaRuntimeCtx, {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        data: umbrellaRuntimeRatingData,
+        backgroundColor: '#E5171D',
+        borderColor: '#ffffff',
+        borderWidth: 1.2,
+        pointRadius: 6,
+        pointHoverRadius: 9,
+        pointHoverBackgroundColor: '#ffffff',
+        pointHoverBorderColor: '#E5171D',
+        pointHoverBorderWidth: 2
+      },
+      {
+        type: 'line',
+        data: umbrellaTrendline,
+        borderColor: 'rgba(255,255,255,0.72)',
+        borderWidth: 2,
+        borderDash: [7, 7],
+        pointRadius: 0,
+        fill: false,
+        tension: 0
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 40,
+        right: 30,
+        bottom: 20,
+        left: 20
+      }
+    },
+    interaction: {
+      mode: 'nearest',
+      intersect: false
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: '#0f1a26',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#E5171D',
+        borderWidth: 1,
+        displayColors: false,
+        padding: 10,
+        callbacks: {
+          label: function(context) {
+            return [
+              'Runtime: ' + context.raw.x + ' min',
+              'Rating: ' + context.raw.y + '/10'
+            ];
+          }
+        }
+      },
+      annotation: {
+        annotations: {
+          corrBox: {
+            type: 'label',
+            xValue: 61,
+            yValue: 7.0,
+            content: ['R = -0,567'],
+            color: '#ffffff',
+            backgroundColor: 'rgba(229,23,29,0.16)',
+            borderColor: 'rgba(229,23,29,0.45)',
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 8,
+            font: {
+              size: 12,
+              weight: '600'
+            }
+          },
+
+        }
+      }
+    },
+    scales: {
+      x: {
+        min: 35,
+        max: 72,
+        ticks: {
+          stepSize: 5,
+          color: 'rgba(255,255,255,0.8)'
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.08)'
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      },
+      y: {
+        min: 4.5,
+        max: 9.5,
+        ticks: {
+          stepSize: 0.5,
+          color: 'rgba(255,255,255,0.8)'
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.12)'
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      }
+    }
+  }
+});
+</script>
+<script>
+const umbrellaDirectorCtx = document.getElementById('umbrellaDirectorRatingChart');
+
+const umbrellaDirectorLabels = [
+  'AMANDA MARSALIS',
+  'PITER HOAR',
+  'ELLEN KURAS',
+  'STEPHEN SURJIK',
+  'TOM VERICA',
+  'JEREMY WEBB',
+  'ANDREW BERNSTEIN',
+  'SULVAIN WHITE',
+  'JEFF KING',
+  'SHERYL DUNYE',
+  'PACO CABEZAS',
+  'NEVILLE KIDD'
+];
+
+const umbrellaDirectorValues = [
+  8.60,
+  8.20, 
+  8.18,
+  8.15, 
+  8.05,
+  7.86, 
+  7.75, 
+  7.50, 
+  7.30, 
+  7.20, 
+  6.56,
+  5.70,
+];
+
+const umbrellaValueLabelPlugin = {
+  id: 'umbrellaValueLabelPlugin',
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '600 12px "Advent Pro", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+
+    meta.data.forEach((bar, index) => {
+      const value = umbrellaDirectorValues[index].toFixed(2);
+      ctx.fillText(value, bar.x, bar.y - 6);
+    });
+
+    ctx.restore();
+  }
+};
+
+new Chart(umbrellaDirectorCtx, {
+  type: 'bar',
+  data: {
+    labels: umbrellaDirectorLabels,
+    datasets: [{
+      data: umbrellaDirectorValues,
+      backgroundColor: [
+        'rgba(229, 23, 29, 0.88)',
+        'rgba(229, 23, 29, 0.80)',
+        'rgba(229, 23, 29, 0.78)',
+        'rgba(229, 23, 29, 0.76)',
+        'rgba(229, 23, 29, 0.70)',
+        'rgba(229, 23, 29, 0.62)',
+        'rgba(229, 23, 29, 0.60)',
+        'rgba(229, 23, 29, 0.56)',
+        'rgba(229, 23, 29, 0.52)',
+        'rgba(229, 23, 29, 0.44)',
+        'rgba(229, 23, 29, 0.40)',
+        'rgba(229, 23, 29, 0.36)'
+      ],   
+      borderColor: '#ffffff',
+      borderWidth: 1.2,
+      borderRadius: 8,
+      borderSkipped: false,
+      hoverBackgroundColor: '#ffffff',
+      hoverBorderColor: '#E5171D',
+      hoverBorderWidth: 2,
+
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 42,
+        right: 20,
+        bottom: 14,
+        left: 8
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: '#0f1a26',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        borderColor: '#E5171D',
+        borderWidth: 1,
+        displayColors: false,
+        padding: 10,
+        callbacks: {
+          title: function(items) {
+            return items[0].label;
+          },
+          label: function(context) {
+            return 'Average Rating: ' + context.parsed.y.toFixed(2) + '/10';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: 'rgba(255,255,255,0.9)',
+          maxRotation: 0,
+          minRotation: 0,
+          font: {
+            size: 10,
+            weight: '700'
+          }
+        },
+        title: {
+          display: false
+        },
+        grid: {
+          display: false
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      },
+      y: {
+        min: 0,
+        max: 10,
+        ticks: {
+          stepSize: 1,
+          color: 'rgba(255,255,255,0.82)'
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.12)',
+          lineWidth: 1
+        },
+        border: {
+          color: 'rgba(255,255,255,0.35)',
+          width: 1.2
+        }
+      }
+    }
+  },
+  plugins: [umbrellaValueLabelPlugin]
+});
+</script>
+<script>
+const images = document.querySelectorAll('.zoomable');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+
+images.forEach(img => {
+  img.addEventListener('click', () => {
+    lightboxImg.src = img.src;
+    lightbox.classList.add('active');
+  });
+});
+
+lightbox.addEventListener('click', () => {
+  lightbox.classList.remove('active');
+});
+</script>
+</body>
+</html>
